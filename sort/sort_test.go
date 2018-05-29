@@ -1,18 +1,10 @@
 package sort
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
-func compareSlice(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for k, v := range a {
-		if v != b[k] {
-			return false
-		}
-	}
-	return true
-}
 func TestInsertionSort(t *testing.T) {
 	var tests = []struct {
 		input []int
@@ -23,7 +15,7 @@ func TestInsertionSort(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if got := InsertionSort(test.input); !compareSlice(got, test.want) {
+		if got := InsertionSort(test.input); !reflect.DeepEqual(got, test.want) {
 			t.Errorf("InsertionSort(%v) = %v", test.input, got)
 		}
 	}
