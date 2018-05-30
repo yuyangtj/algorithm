@@ -1,5 +1,9 @@
 package sort
 
+import (
+	"sync"
+)
+
 //InsertionSort implements the inefficient insertion sort algorithm
 func InsertionSort(s []int) []int {
 	length := len(s)
@@ -44,6 +48,25 @@ func MergeSort(A []int, p, r int) []int {
 		q := (p + r) / 2
 		MergeSort(A, p, q)
 		MergeSort(A, q, r)
+		merge(A, p, q, r)
+	}
+	return A
+}
+
+func MergeSortConcurr(A []int, p, r int) []int {
+	if p < r-1 {
+		q := (p + r) / 2
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func(A []int, p, q int) {
+			defer wg.Done()
+			MergeSortConcurr(A, p, q)
+		}(A, p, q)
+		go func(A []int, q, r int) {
+			defer wg.Done()
+			MergeSortConcurr(A, q, r)
+		}(A, q, r)
+		wg.Wait()
 		merge(A, p, q, r)
 	}
 	return A
