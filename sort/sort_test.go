@@ -57,7 +57,7 @@ func TestMergeSortConcurr(t *testing.T) {
 
 func BenchmarkInsertionSort(b *testing.B) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	l := r.Perm(10000)
+	l := r.Perm(100000)
 	for i := 0; i < b.N; i++ {
 		InsertionSort(l)
 	}
@@ -65,7 +65,7 @@ func BenchmarkInsertionSort(b *testing.B) {
 
 func BenchmarkMergeSort(b *testing.B) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	l := r.Perm(10000)
+	l := r.Perm(100000)
 	for i := 0; i < b.N; i++ {
 		MergeSort(l, 0, len(l))
 	}
@@ -73,7 +73,7 @@ func BenchmarkMergeSort(b *testing.B) {
 
 func BenchmarkMergeSortConcurr(b *testing.B) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	l := r.Perm(10000)
+	l := r.Perm(100000)
 	for i := 0; i < b.N; i++ {
 		MergeSortConcurr(l, 0, len(l))
 	}
