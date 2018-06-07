@@ -1,11 +1,16 @@
 package sort
 
 import (
+	"errors"
 	"sync"
 )
 
+var (
+	ErrorNotImplemented = errors.New("Sorting failed")
+)
+
 //InsertionSort implements the inefficient insertion sort algorithm
-func InsertionSort(s []int) []int {
+func InsertionSort(s []int) ([]int, error) {
 	length := len(s)
 	for j := 1; j < length; j++ {
 		key := s[j]
@@ -15,7 +20,7 @@ func InsertionSort(s []int) []int {
 		}
 		s[i+1] = key
 	}
-	return s
+	return s, nil
 
 }
 
@@ -42,34 +47,43 @@ func merge(A []int, p, q, r int) {
 
 }
 
-//MergeSort implements the inefficient merge sort algorithm
-func MergeSort(A []int, p, r int) []int {
+func mergeSort(A []int, p, r int) {
 	if p < r-1 {
 		q := (p + r) / 2
-		MergeSort(A, p, q)
-		MergeSort(A, q, r)
+		mergeSort(A, p, q)
+		mergeSort(A, q, r)
 		merge(A, p, q, r)
 	}
-	return A
 }
 
-func MergeSortConcurr(A []int, p, r int) []int {
+//MergeSort implements the inefficient merge sort algorithm
+func MergeSort(A []int) ([]int, error) {
+	mergeSort(A, 0, len(A))
+	return A, nil
+}
+
+func mergeSortConcurr(A []int, p, r int) {
 	if p < r-1 {
 		q := (p + r) / 2
 		var wg sync.WaitGroup
 		wg.Add(2)
 		go func(A []int, p, q int) {
 			defer wg.Done()
-			MergeSortConcurr(A, p, q)
+			mergeSortConcurr(A, p, q)
 		}(A, p, q)
 		go func(A []int, q, r int) {
 			defer wg.Done()
-			MergeSortConcurr(A, q, r)
+			mergeSortConcurr(A, q, r)
 		}(A, q, r)
 		wg.Wait()
 		merge(A, p, q, r)
 	}
-	return A
+}
+
+func MergeSortConcurr(A []int) ([]int, error) {
+	mergeSortConcurr(A, 0, len(A))
+	return A, nil
+
 }
 
 type heap struct {
@@ -127,9 +141,9 @@ func heapSort(h heap) {
 	}
 }
 
-func HeapSort(a []int) []int {
+func HeapSort(a []int) ([]int, error) {
 	length, heapSize := len(a), len(a)
 	hp := heap{array: a, length: length, heapSize: heapSize}
 	heapSort(hp)
-	return a
+	return a, nil
 }

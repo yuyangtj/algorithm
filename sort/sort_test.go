@@ -7,98 +7,61 @@ import (
 	"time"
 )
 
-func TestInsertionSort(t *testing.T) {
+func TestSort(t *testing.T) {
 	var tests = []struct {
 		input []int
 		want  []int
 	}{
 		{[]int{4, 1, 3, 6}, []int{1, 3, 4, 6}},
 		{[]int{4, 1, 3}, []int{1, 3, 4}},
+		{[]int{0}, []int{0}},
 	}
-
-	for _, test := range tests {
-		if got := InsertionSort(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("InsertionSort(%v) = %v, want %v", test.input, got, test.want)
-		}
-	}
-}
-
-func TestMergeSort(t *testing.T) {
-	var tests = []struct {
-		input []int
-		want  []int
+	var testCases = []struct {
+		name string
+		item func([]int) ([]int, error)
 	}{
-		{[]int{4, 1, 3, 6}, []int{1, 3, 4, 6}},
-		{[]int{4, 1, 3}, []int{1, 3, 4}},
+		{"InsertionSort", InsertionSort},
+		{"MergeSort", MergeSort},
+		{"MergeSortConcurr", MergeSortConcurr},
+		{"HeapSort", HeapSort},
 	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			for _, test := range tests {
 
-	for _, test := range tests {
-		if got := MergeSort(test.input, 0, len(test.input)); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("InsertionSort(%v) = %v, want %v", test.input, got, test.want)
-		}
+				got, err := testCase.item(test.input)
+				if err != nil {
+					t.Fatal("sorting is not implemented")
+				}
+				if !reflect.DeepEqual(got, test.want) {
+					t.Errorf("InsertionSort(%v) = %v, want %v", test.input, got, test.want)
+				}
+			}
+
+		})
+
 	}
 }
 
-func TestMergeSortConcurr(t *testing.T) {
-	var tests = []struct {
-		input []int
-		want  []int
+func BenchmarkSort10k(b *testing.B) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	l := r.Perm(10000)
+	benchmarks := []struct {
+		name string
+		size int
+		item func([]int) ([]int, error)
 	}{
-		{[]int{4, 1, 3, 6}, []int{1, 3, 4, 6}},
-		{[]int{4, 1, 3}, []int{1, 3, 4}},
+		//{"InsertSort", len(l), InsertionSort},
+		{"MergeSort", len(l), MergeSort},
+		{"MergeSortConcurr", len(l), MergeSortConcurr},
+		{"HeapSort", len(l), HeapSort},
 	}
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				bm.item(l)
+			}
 
-	for _, test := range tests {
-		if got := MergeSortConcurr(test.input, 0, len(test.input)); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("InsertionSort(%v) = %v, want %v", test.input, got, test.want)
-		}
-	}
-}
-
-func TestHeapSort(t *testing.T) {
-	var tests = []struct {
-		input []int
-		want  []int
-	}{
-		{[]int{4, 1, 3, 6}, []int{1, 3, 4, 6}},
-		{[]int{4, 1, 3}, []int{1, 3, 4}},
-	}
-
-	for _, test := range tests {
-		if got := HeapSort(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("InsertionSort(%v) = %v, want %v", test.input, got, test.want)
-		}
-	}
-}
-
-func BenchmarkInsertionSort(b *testing.B) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	l := r.Perm(100000)
-	for i := 0; i < b.N; i++ {
-		InsertionSort(l)
-	}
-}
-
-func BenchmarkMergeSort(b *testing.B) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	l := r.Perm(100000)
-	for i := 0; i < b.N; i++ {
-		MergeSort(l, 0, len(l))
-	}
-}
-
-func BenchmarkMergeSortConcurr(b *testing.B) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	l := r.Perm(100000)
-	for i := 0; i < b.N; i++ {
-		MergeSortConcurr(l, 0, len(l))
-	}
-}
-
-func BenchmarkHeapSort(b *testing.B) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	l := r.Perm(100000)
-	for i := 0; i < b.N; i++ {
-		HeapSort(l)
+		})
 	}
 }
