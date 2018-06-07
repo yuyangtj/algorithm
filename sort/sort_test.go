@@ -55,6 +55,22 @@ func TestMergeSortConcurr(t *testing.T) {
 	}
 }
 
+func TestHeapSort(t *testing.T) {
+	var tests = []struct {
+		input []int
+		want  []int
+	}{
+		{[]int{4, 1, 3, 6}, []int{1, 3, 4, 6}},
+		{[]int{4, 1, 3}, []int{1, 3, 4}},
+	}
+
+	for _, test := range tests {
+		if got := HeapSort(test.input); !reflect.DeepEqual(got, test.want) {
+			t.Errorf("InsertionSort(%v) = %v, want %v", test.input, got, test.want)
+		}
+	}
+}
+
 func BenchmarkInsertionSort(b *testing.B) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	l := r.Perm(100000)
@@ -76,5 +92,13 @@ func BenchmarkMergeSortConcurr(b *testing.B) {
 	l := r.Perm(100000)
 	for i := 0; i < b.N; i++ {
 		MergeSortConcurr(l, 0, len(l))
+	}
+}
+
+func BenchmarkHeapSort(b *testing.B) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	l := r.Perm(100000)
+	for i := 0; i < b.N; i++ {
+		HeapSort(l)
 	}
 }

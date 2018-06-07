@@ -71,3 +71,65 @@ func MergeSortConcurr(A []int, p, r int) []int {
 	}
 	return A
 }
+
+type heap struct {
+	array    []int
+	length   int
+	heapSize int
+}
+
+//func prtNum(i interface{}) {
+//	r := reflect.ValueOf(i).String()
+//	log.Printf("%T", r)
+//}
+func maxHeapify(h heap, index int) {
+	l := index<<1 + 1
+
+	r := index<<1 + 2
+
+	var largest int
+
+	if l < h.heapSize && h.array[l] > h.array[index] {
+
+		largest = l
+	} else {
+
+		largest = index
+	}
+	if r < h.heapSize && h.array[r] > h.array[largest] {
+
+		largest = r
+	}
+	if largest != index {
+
+		h.array[index], h.array[largest] = h.array[largest], h.array[index]
+		maxHeapify(h, largest)
+	}
+}
+
+func buildMaxHeap(h heap) {
+	h.heapSize = h.length
+	index := h.length / 2
+
+	for index >= 0 {
+
+		maxHeapify(h, index)
+		index--
+	}
+}
+
+func heapSort(h heap) {
+	buildMaxHeap(h)
+	for i := h.length - 1; i >= 1; i-- {
+		h.array[0], h.array[i] = h.array[i], h.array[0]
+		h.heapSize--
+		maxHeapify(h, 0)
+	}
+}
+
+func HeapSort(a []int) []int {
+	length, heapSize := len(a), len(a)
+	hp := heap{array: a, length: length, heapSize: heapSize}
+	heapSort(hp)
+	return a
+}
