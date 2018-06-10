@@ -1,0 +1,22 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	sort "sort_algorithm/sort"
+	"time"
+
+	"github.com/pkg/profile"
+)
+
+func main() {
+	defer profile.Start().Stop()
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	l := r.Perm(1000000)
+	sort.HeapSort(l)
+	if sort.IsSorted(l) != false {
+		fmt.Println("array is sorted")
+	} else {
+		fmt.Println("failed")
+	}
+}

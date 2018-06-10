@@ -9,6 +9,15 @@ var (
 	ErrorNotImplemented = errors.New("Sorting failed")
 )
 
+func IsSorted(l []int) bool {
+	for i := 0; i < len(l)-1; i++ {
+		if l[i+1] < l[i] {
+			return false
+		}
+	}
+	return true
+}
+
 //InsertionSort implements the inefficient insertion sort algorithm
 func InsertionSort(s []int) ([]int, error) {
 	length := len(s)
@@ -62,6 +71,8 @@ func MergeSort(A []int) ([]int, error) {
 	return A, nil
 }
 
+//mergeSortConcurr ...[add]
+//past through the -race test
 func mergeSortConcurr(A []int, p, r int) {
 	if p < r-1 {
 		q := (p + r) / 2

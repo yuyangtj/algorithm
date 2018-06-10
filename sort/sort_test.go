@@ -51,7 +51,7 @@ func BenchmarkSort10k(b *testing.B) {
 		size int
 		item func([]int) ([]int, error)
 	}{
-		//{"InsertSort", len(l), InsertionSort},
+		{"InsertSort", len(l), InsertionSort},
 		{"MergeSort", len(l), MergeSort},
 		{"MergeSortConcurr", len(l), MergeSortConcurr},
 		{"HeapSort", len(l), HeapSort},
