@@ -7,7 +7,7 @@ import (
 type Queue struct {
 	//Queue represnets the data structure queue. Its implementation follows
 	// the algorithm in CLRS, which utilizes a circular array
-	a        []int
+	a        []interface{}
 	tail     int
 	head     int
 	capacity int
@@ -31,12 +31,12 @@ func NewQueue(n int) *Queue {
 	if n <= 0 {
 		panic(QueueCapNonPositveErr)
 	}
-	return &Queue{a: make([]int, n), head: 0, capacity: n}
+	return &Queue{a: make([]interface{}, n), head: 0, capacity: n}
 }
 
 //EnQueue adds one element x at the end of the queue. When the queue the full,
 //the function will return a QueueOverFlowErr
-func (q *Queue) EnQueue(x int) error {
+func (q *Queue) EnQueue(x interface{}) error {
 	if q.Length >= q.capacity {
 		return QueueOverFlowErr
 	}
@@ -56,7 +56,7 @@ func (q *Queue) EnQueue(x int) error {
 
 //DeQueue removes one element x from the begining of the queue. When the queue the empty,
 //the function will return a QueueUnderFlowErr
-func (q *Queue) DeQueue() (int, error) {
+func (q *Queue) DeQueue() (interface{}, error) {
 	if q.Length <= 0 {
 		return 0, QueueUnderFlowErr
 	}
@@ -74,7 +74,7 @@ func (q *Queue) DeQueue() (int, error) {
 //Resize returns a new queue with the size of underlying array doubled
 func (q *Queue) Resize() *Queue {
 	cap := 2 * q.capacity
-	arr := make([]int, cap)
+	arr := make([]interface{}, cap)
 	head := 0
 	tail := q.Length
 	length := q.Length
