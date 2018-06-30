@@ -1,6 +1,7 @@
 package main
 
 import (
+	"algorithm/queue"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -8,12 +9,17 @@ import (
 	"time"
 )
 
+// TODO:
+// func NewTree
+// func NewEmptyTree
+
 //Node represents a node in the BST
 type Node struct {
 	parent *Node
 	left   *Node
 	right  *Node
 	key    int
+	depth  int
 }
 
 //Tree represents the whole BST
@@ -42,33 +48,55 @@ func NewNodes(k ...int) []*Node {
 //String prints the whole tree
 func (t *Tree) String() string {
 	s := &[]string{}
-	InorderTreeWalk(t.root, s)
+	inorderTreeWalk(t.root, s)
 	return strings.Join(*s, " ")
 }
 
 //InorderTreeWalk walks the tree in order
 
-// func PrintTree(t *Tree) {
-// 	ch := make(chan *Node)
-// 	go ch <- t.root
-// 	for len(ch) > 0 {
-// 		node := <-ch
-// 		fmt.Println(node.key)
-// 		if node.left != (*Node)(nil) {
-// 			 go ch <- node.left
-// 		}
-// 		if node.right != (*Node)(nil) {
-// 			go ch <- node.right
-// 		}
-// 	}
+func PrintTree(t *Tree) {
+	q := queue.NewQueue(128)
+	q.EnQueue(t.root)
+	depth := 0
+	for q.Length > 0 {
+		node, err := q.DeQueue()
+		if err != nil {
+			fmt.Printf("failed due to %v", err)
+		}
+		// fmt.Printf("depth: %v\n", node.(*Node).depth)
+		if node.(*Node).depth > depth {
+			fmt.Println()
+			fmt.Println()
+			depth = node.(*Node).depth
+		}
+		fmt.Printf("%v ", node.(*Node).key)
+		if node.(*Node).left != (*Node)(nil) {
+			q.EnQueue(node.(*Node).left)
+		}
+		if node.(*Node).right != (*Node)(nil) {
+			q.EnQueue(node.(*Node).right)
+		}
+	}
 
-// }
-func InorderTreeWalk(x *Node, s *[]string) {
+}
+func inorderTreeWalk(x *Node, s *[]string) {
 
 	if x != nil {
-		InorderTreeWalk(x.left, s)
+		inorderTreeWalk(x.left, s)
 		*s = append(*s, strconv.Itoa(x.key))
-		InorderTreeWalk(x.right, s)
+		inorderTreeWalk(x.right, s)
+	}
+
+}
+
+func InorderTreeWalk(x *Node) {
+
+	if x != (*Node)(nil) {
+
+		InorderTreeWalk(x.left)
+		fmt.Printf("..%+v", x)
+		InorderTreeWalk(x.right)
+
 	}
 
 }
@@ -165,6 +193,7 @@ func insert(t *Tree, z *Node) {
 		h++
 
 	}
+	z.depth = h - 1
 	if h > t.height {
 		t.height = h
 	}
@@ -180,12 +209,25 @@ func insert(t *Tree, z *Node) {
 
 func main() {
 
-	// r := NewNode(1)
+	// r := NewNode(0)
+	// r1 := NewNode(1)
+	// r2 := NewNode(2)
+	// r3 := NewNode(3)
+	// r4 := NewNode(4)
+	// t := &Tree{root: r}
+	// r.left = r1
+	// r.right = r2
+	// r1.left = r3
+	// r1.right = r4
 	r := (*Node)(nil)
 	t := &Tree{root: r}
-	ns1 := NewNodes(1, 2, 3, 4, 5, 6)
+	ns1 := NewNodes(1, 2, 4, 3, 6, 5)
 	InsertNodesRandom(t, ns1)
-	fmt.Printf("%v\n", t)
+	// fmt.Printf("%v\n", t)
 	fmt.Printf("root of the tree: %v\n", t.root.key)
 	fmt.Printf("height ot the tree: %v\n", t.height)
+	// key := 1
+	// fmt.Printf("depth node with key %v is %v\n", key, Search(t.root, key).depth)
+	PrintTree(t)
+	InorderTreeWalk(t.root)
 }
